@@ -48,6 +48,62 @@ void ft_poisk(s_list ***tmp)
 	}
 }
 
+int ft_check2(char *str, int i, int j)
+{
+	int x1;
+	int x2;
+	int x3;
+
+
+	x1 = 0;
+	x2 = 0;
+	x3 = 0;
+	while (i < j && str[i] != '\0')
+	{
+		if  (str[i] == '.')
+			x1++;
+		else if (str[i] == '#')
+			x2++;
+		else if (str[i] == '\n')
+			x3++;
+		i++;
+	}
+	if (x1 == 12 && x2 == 4 && x3 == 4)
+		return(1);
+	return (-1);
+}
+
+int ft_check1(char *str)
+{
+	int i;
+	int j;
+	int x;
+	int f;
+
+	i = 20;
+	j = 0;
+	x = 0;
+	f = ft_strlen(str) + 21;
+	while ((i != f) && (x <= 26)) //уточнить насчет ограничения в 26
+	{
+		if ((str[i] == '\n' && str[i - 1] == '\n') ||
+				str[i] == '\0')
+		{
+			if (ft_check2(str, j, i) == -1)
+				return (-1);
+			j = i + 1;
+			i = i + 21;
+			x++;
+		}
+		else
+			return (-1);
+	}
+	if (x > 26)
+		return (-1);
+	return (x);
+}
+
+
 void creation(s_list **tmp, char *str)
 {
 	int i;
@@ -136,7 +192,6 @@ s_list *mass(int t, char *str)
 	s_list *head;
 	s_list *tmp;
 	int c;
-	int x;
 	char i;
 
 	if (!(head = (s_list*)malloc(sizeof(s_list))))
@@ -190,7 +245,11 @@ int main(int argc, char **argv)
 
 	fd = open(argv[1], O_RDONLY);
 	str = read_file((const int)fd, str);
-	head = mass(4, str);
+	if (str == NULL)
+		return(-1);
+	if ((i = ft_check1(str)) == -1)
+			return(-1);
+	head = mass(i, str);
 	elem = head;
 	i = check3(&elem);
 	printf("i - %d\n", i);
@@ -200,13 +259,11 @@ int main(int argc, char **argv)
 		while (i < 8)
 		{
 			printf("%d", elem->data[i]);
-			//printf("%c", elem->c);
 			i++;
 		}
 		printf("%c", elem->c);
 		printf("\n");
 		elem = elem->next;
 	}
-	printf("\n");
 	return (0);
 }
