@@ -1,12 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main1.c                                            :+:      :+:    :+:   */
+/*   dele.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thalfemp <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   B) thalfemptruct s_map
+ *   {
+ *   int size;
+ *   char **array;
+ *   } t_map;<marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/30 16:39:11 by thalfemp          #+#    #+#             */
-/*   Updated: 2019/11/01 14:07:05 by thalfemp         ###   ########.fr       */
+/*   Created: 2019/10/02 13:31:15 by thalfemp          #+#    #+#             */
+/*   Updated: 2019/11/01 13:18:58 by thalfemp         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +146,7 @@ int check(int s1[8], int s2[8])
 	return (1);
 }
 
-int last_check(int *a)
+int last_check(int a[8])
 {
 	if (check(a, I_PAT) || check(a, IH_PAT) || check(a, O_PAT))
 		return (1);
@@ -162,50 +166,53 @@ int last_check(int *a)
 		return (-1);
 }
 
-int check3(s_list **elem)
+void deleteList(s_list ***elem)
 {
-	s_list *tmp;
-	int i;
 	s_list *current;
 	s_list *next;
 
-	current = *elem;
+	current = **elem;
+	while (current != NULL)
+	{
+		next = current->next;
+		free(current);
+		current = next;
+	}
+	**elem = NULL;
+}
+
+int check3(s_list **elem)
+{
+	s_list *tmp;
+	
 	tmp = *elem;
 	while (tmp)
 	{
 		if ((last_check(tmp->data) == -1))
 		{
-			while (current)
-			{
-				next = current->next;
-				free(current);
-				current = next;
-			}
-			*elem = NULL;
+			deleteList(&elem);
 			return (-1);
 		}
 		tmp = tmp->next;
 	}
-	free(current);
 	return(1);
 }
 		
 s_list *mass(int t, char *str, s_list *head)
 {
-	//s_list *head;
 	s_list *tmp;
-	int c;
 	char i;
+	int x;
 
 	if (!(head = (s_list*)malloc(sizeof(s_list))))
 		return (NULL);
 	tmp = head;
-	c = 0;
 	i = 'A';
+	x = 0;
 	while (t != 0)
 	{	
 		tmp->c = i;
-		creation(tmp, ft_strsub(str, c, 20));
+		creation(tmp, ft_strsub(str, x, 20));
 		if ((t - 1) != 0)
 		{
 			if (!((tmp->next) = (s_list*)malloc(sizeof(s_list))))
@@ -213,7 +220,7 @@ s_list *mass(int t, char *str, s_list *head)
 		}
 		tmp = tmp->next;
 		t--;
-		c += 21;
+		x += 21;
 		i++;
 	}
 	return (head);
@@ -262,7 +269,7 @@ void p(char **mas)
 	int i;
 
 	i = 0;
-	while (i < 4)
+	while (i < 6)
 	{
 		printf("%s", mas[i]);
 		printf("\n");
@@ -286,12 +293,12 @@ int main(int argc, char **argv)
 		return(-1);
 	if ((size = ft_check1(str)) == -1)
 			return(-1);
-	elem = mass(size, str, head);
-	head = elem;
+	head = NULL;
+	head = mass(size, str, head);
 	if ((check3(&head)) == -1)
 		return(-1);
-    tetr(size, head);
-	//p(mas);
+   	mas = tetr(size, head);
+	p(mas);
 	//sol(size, head);
 	return (0);
 }

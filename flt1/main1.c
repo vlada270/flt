@@ -6,7 +6,7 @@
 /*   By: thalfemp <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 16:39:11 by thalfemp          #+#    #+#             */
-/*   Updated: 2019/11/01 14:07:05 by thalfemp         ###   ########.fr       */
+/*   Updated: 2019/11/04 14:40:25 by thalfemp         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,59 +27,31 @@ int num(int nb)
 	return (i);
 }
 
-void free_map(t_map *map)
+char **create_mas(int size)
 {
-	int i;
-
-	i = 0;
-	while (i < map->size)
-	{
-		ft_memdel((void **)&(map->array[i]));
-		i++;
-	}
-	ft_memdel((void **)&(map->array));
-	ft_memdel((void **)&map);
-}
-
-t_map *map_new(int size)
-{
-	t_map *map;
+	char **map;
 	int i;
 	int j;
 
-	map = (t_map *)ft_memalloc(sizeof(t_map));
-	map->size = size;
-	map->array = (char **)ft_memalloc(sizeof(char *) * size);
 	i = 0;
+	if (!(map = (char**)malloc(sizeof(char*) * (size + 1))))
+		return (NULL);
 	while (i < size)
 	{
-		map->array[i] = ft_strnew(size);
-		j = 0;
-		while (j < size)
-		{
-			map->array[i][j] = '.';
-			j++;
-		}
+		if (!(map[i] = (char*)malloc(sizeof(char) * (size + 1))))
+			return (NULL);
+		j = -1;
+		while (j++ < size - 1)
+			map[i][j] = '.';
+		map[i][j] = '\0';
 		i++;
 	}
+	map[i] = NULL;
 	return (map);
 }
 
-void print_map(t_map *map)
-{
-	int i;
 
-	i = 0;
-	while (i < map->size)
-	{
-		ft_putstr(map->array[i]);
-		ft_putchar('\n');
-		i++;
-	}
-}
-
-
-void tetr(int size, s_list *elem)
+/*void tetr(int size, s_list *elem)
 {
 	t_map  *map;
 	char **res;
@@ -92,6 +64,7 @@ void tetr(int size, s_list *elem)
 	printf("\n");
 	printf("%d", elem->data[1]);
 	printf("\n");
+	//print_map(map);
 	size++;
 	free_map(map);
 	map = map_new(size);
@@ -99,6 +72,7 @@ void tetr(int size, s_list *elem)
 	printf("\n");
 	printf("%d", elem->data[1]);
 	printf("\n");
+	//print_map(map);
 	size++;
 	free_map(map);
 	map = map_new(size);
@@ -106,6 +80,34 @@ void tetr(int size, s_list *elem)
 	printf("\n");
 	printf("%d", elem->data[1]);
 	printf("\n");
+	//print_map(map);
+}*/
+
+char **tetr(int size, s_list *elem)
+{
+	char **mas;
+	char **res;
+	int i;
+	int j;
+
+	i = 0;
+	size = num(size);
+	if (!(mas = create_mas(size)))
+		return(NULL);
+	while (!(res = algoritm(mas, size, elem)))
+	{
+		j = 0;
+		while (j < size)
+		{
+			free(mas[j]);
+			j++;
+		}
+		free(mas);
+		size++;
+		if (!(mas = create_mas(size)))
+			return(NULL);
+	}
+	return (res);
 }
 
 void prnt(char **res, int size)
